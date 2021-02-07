@@ -17,7 +17,6 @@ const definition = protoLoader.loadSync(PROTO_PATH, {
 
 const BlockMultService = grpc.loadPackageDefinition(definition)
   .BlockMultService;
-const server = new grpc.Server();
 
 const port = process.env.PORT || 30043;
 const host = process.env.HOST || "127.0.0.1";

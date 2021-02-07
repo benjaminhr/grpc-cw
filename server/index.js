@@ -15,6 +15,7 @@ const server = new grpc.Server();
 
 const serviceFunctions = {
   multiplyBlock: (body, cb) => {
+    console.log("=> multiplyBlock called");
     const { A, B, MAX } = body.request;
     const multMatrix = blockMult.multiplyBlock(
       utils.convertProtoBufToArray(A),
@@ -25,6 +26,7 @@ const serviceFunctions = {
     cb(null, { block: response });
   },
   addBlock: (body, cb) => {
+    console.log("=> addBlock called");
     const { A, B, MAX } = body.request;
     const multMatrix = blockMult.addBlock(
       utils.convertProtoBufToArray(A),
