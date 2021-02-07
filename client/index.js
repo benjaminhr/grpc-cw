@@ -19,7 +19,7 @@ const BlockMultService = grpc.loadPackageDefinition(definition)
   .BlockMultService;
 
 const port = process.env.PORT || 30043;
-const host = process.env.HOST || "127.0.0.1";
+const host = process.env.HOST || "0.0.0.0";
 const address = `${host}:${port}`;
 const client = new BlockMultService(address, grpc.credentials.createInsecure());
 
