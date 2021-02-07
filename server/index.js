@@ -41,7 +41,7 @@ const serviceFunctions = {
 server.addService(blockMultProto.BlockMultService.service, serviceFunctions);
 
 const port = process.env.PORT || 30043;
-const host = process.env.HOST || "127.0.0.1";
+const host = process.env.HOST || "0.0.0.0";
 const address = `${host}:${port}`;
 
 server.bind(address, grpc.ServerCredentials.createInsecure());
