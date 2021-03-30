@@ -24,7 +24,7 @@ const address = `${host}:${port}`;
 const client = new BlockMultService(address, grpc.credentials.createInsecure());
 
 // Global variable for blockmult functions
-const MAX = 4;
+const MAX = 8;
 
 /*
   Wrapper function which creates protobuf acceptable block
@@ -155,17 +155,39 @@ async function multiplyMatrixBlock(A, B) {
 }
 
 const A = [
-  [1, 2, 3, 4],
-  [5, 6, 7, 8],
-  [9, 10, 11, 12],
-  [13, 14, 15, 16],
+  [1, 2, 3, 4, 1, 2, 3, 4],
+  [1, 2, 3, 4, 1, 2, 3, 4],
+  [1, 2, 3, 4, 1, 2, 3, 4],
+  [1, 2, 3, 4, 1, 2, 3, 4],
+  [1, 2, 3, 4, 1, 2, 3, 4],
+  [1, 2, 3, 4, 1, 2, 3, 4],
+  [1, 2, 3, 4, 1, 2, 3, 4],
+  [1, 2, 3, 4, 1, 2, 3, 4],
 ];
 
 const B = [
-  [1, 2, 3, 4],
-  [5, 6, 7, 8],
-  [9, 10, 11, 12],
-  [13, 14, 15, 16],
+  [1, 2, 3, 4, 1, 2, 3, 4],
+  [1, 2, 3, 4, 1, 2, 3, 4],
+  [1, 2, 3, 4, 1, 2, 3, 4],
+  [1, 2, 3, 4, 1, 2, 3, 4],
+  [1, 2, 3, 4, 1, 2, 3, 4],
+  [1, 2, 3, 4, 1, 2, 3, 4],
+  [1, 2, 3, 4, 1, 2, 3, 4],
+  [1, 2, 3, 4, 1, 2, 3, 4],
 ];
+
+// const A = [
+//   [1, 2, 3, 4],
+//   [1, 2, 3, 4],
+//   [1, 2, 3, 4],
+//   [1, 2, 3, 4],
+// ];
+
+// const B = [
+//   [1, 2, 3, 4],
+//   [1, 2, 3, 4],
+//   [1, 2, 3, 4],
+//   [1, 2, 3, 4],
+// ];
 
 multiplyMatrixBlock(A, B).then(console.log).catch(console.log);
