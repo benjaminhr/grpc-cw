@@ -23,9 +23,6 @@ const host = process.env.HOST || "0.0.0.0";
 const address = `${host}:${port}`;
 const client = new BlockMultService(address, grpc.credentials.createInsecure());
 
-// Global variable for blockmult functions
-// const MAX = 2;
-
 /*
   Wrapper function which creates protobuf acceptable block
   data structure, and then calls grpc multiplyBlock function

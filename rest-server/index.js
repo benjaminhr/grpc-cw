@@ -1,18 +1,18 @@
+const path = require("path");
 const express = require("express");
 const cors = require("cors");
 const bodyParser = require("body-parser");
 const fileUpload = require("express-fileupload");
 const multiplyMatrixBlock = require("./multiplyMatrixBlock");
+const utils = require("../utils/tools");
 const app = express();
 
 app.use(cors());
-// app.use(express.json());
 app.use(fileUpload());
-// app.use(
-//   bodyParser.urlencoded({
-//     extended: true,
-//   })
-// );
+
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "../public", "index.html"));
+});
 
 /*
   POST /multiply endpoint
@@ -37,14 +37,22 @@ app.post("/multiply", async (req, res) => {
   const fileA = req.files.A.data.toString();
   const fileB = req.files.B.data.toString();
 
-  console.log(fileA);
-  console.log(fileB);
+  const matrixA = utils.textToMatrix(fileA);
+  const matrixB = utils.textToMatrix(fileB);
 
-  // if (!A || !B) {
-  //   throw new Error("A or B matrices are undefined");
-  // } else if (A[0].constructor !== Array || B[0].constructor !== Array) {
-  //   throw new Error("A or B is not a 2D array");
-  // }
+  const dimension = matrixA.length;
+
+  // Error handling for when matrices do not have the same dimensions
+  if (matrixA.length !== matrixB.length) {
+    return res.status(400).send("Matrices do not have the same dimensions");
+  }
+
+  // Error handling for when the matrices do not have dimensions which are powers of 2
+  if (!utils.powerOfTwo(dimension)) {
+    return res
+      .status(400)
+      .send("Matrix dimensions must be powers of 2 e.g. 2x2, 4x4, 8x8");
+  }
 
   // const A = [
   //   [1, 2, 3, 4, 1, 2, 3, 4],
@@ -66,18 +74,18 @@ app.post("/multiply", async (req, res) => {
   //   [1, 2, 3, 4, 1, 2, 3, 4],
   //   [1, 2, 3, 4, 1, 2, 3, 4],
   // ];
-  const A = [
-    [1, 2, 3, 4],
-    [1, 2, 3, 4],
-    [1, 2, 3, 4],
-    [1, 2, 3, 4],
-  ];
-  const B = [
-    [1, 2, 3, 4],
-    [1, 2, 3, 4],
-    [1, 2, 3, 4],
-    [1, 2, 3, 4],
-  ];
+  // const A = [
+  //   [1, 2, 3, 4],
+  //   [1, 2, 3, 4],
+  //   [1, 2, 3, 4],
+  //   [1, 2, 3, 4],
+  // ];
+  // const B = [
+  //   [1, 2, 3, 4],
+  //   [1, 2, 3, 4],
+  //   [1, 2, 3, 4],
+  //   [1, 2, 3, 4],
+  // ];
   // const A = [
   //   [1, 2],
   //   [1, 2],
@@ -87,7 +95,7 @@ app.post("/multiply", async (req, res) => {
   //   [1, 2],
   // ];
   try {
-    const resultingMatrix = await multiplyMatrixBlock(A, B);
+    const resultingMatrix = await multiplyMatrixBlock(matrixA, matrixB);
     res.json(resultingMatrix).status(200);
   } catch (error) {
     console.log(error);
