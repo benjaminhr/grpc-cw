@@ -14,7 +14,12 @@
     <div class="container" style="margin-top: 18rem">
       <h2 class="title">Multiply Matrices</h2>
       <hr />
-      <form>
+      <form
+        action="/multiply"
+        method="post"
+        enctype="multipart/form-data"
+        id="upload"
+      >
         <div class="row">
           <div class="six columns">
             <label for="A">Matrix A:</label>
@@ -34,6 +39,39 @@
           Multiply
         </button>
       </form>
+
+      <table class="matrix"></table>
     </div>
   </body>
+
+  <script>
+    document.querySelector("#upload").addEventListener("submit", (event) => {
+      event.preventDefault();
+      fetch(event.target.action, {
+        method: "POST",
+        headers: {},
+        body: new FormData(event.target),
+      })
+        .then((resp) => {
+          return resp.json();
+        })
+        .then((matrix) => {
+          const table = document.querySelector(".matrix");
+
+          let result = "";
+          for (let i = 0; i < matrix.length; i++) {
+            result += "<tr>";
+            for (let j = 0; j < matrix[i].length; j++) {
+              result += "<td>" + matrix[i][j] + "</td>";
+            }
+            result += "</tr>";
+          }
+
+          table.innerHTML = result;
+        })
+        .catch((error) => {
+          console.log("Error uploading: ", error);
+        });
+    });
+  </script>
 </html>

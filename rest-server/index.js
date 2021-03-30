@@ -34,8 +34,8 @@ app.post("/multiply", async (req, res) => {
     return res.status(400).send('Request is missing file "B"');
   }
 
-  const fileA = req.files.A.data.toString();
-  const fileB = req.files.B.data.toString();
+  const fileA = req.files.A.data.toString().trim();
+  const fileB = req.files.B.data.toString().trim();
 
   const matrixA = utils.textToMatrix(fileA);
   const matrixB = utils.textToMatrix(fileB);
@@ -54,46 +54,6 @@ app.post("/multiply", async (req, res) => {
       .send("Matrix dimensions must be powers of 2 e.g. 2x2, 4x4, 8x8");
   }
 
-  // const A = [
-  //   [1, 2, 3, 4, 1, 2, 3, 4],
-  //   [1, 2, 3, 4, 1, 2, 3, 4],
-  //   [1, 2, 3, 4, 1, 2, 3, 4],
-  //   [1, 2, 3, 4, 1, 2, 3, 4],
-  //   [1, 2, 3, 4, 1, 2, 3, 4],
-  //   [1, 2, 3, 4, 1, 2, 3, 4],
-  //   [1, 2, 3, 4, 1, 2, 3, 4],
-  //   [1, 2, 3, 4, 1, 2, 3, 4],
-  // ];
-  // const B = [
-  //   [1, 2, 3, 4, 1, 2, 3, 4],
-  //   [1, 2, 3, 4, 1, 2, 3, 4],
-  //   [1, 2, 3, 4, 1, 2, 3, 4],
-  //   [1, 2, 3, 4, 1, 2, 3, 4],
-  //   [1, 2, 3, 4, 1, 2, 3, 4],
-  //   [1, 2, 3, 4, 1, 2, 3, 4],
-  //   [1, 2, 3, 4, 1, 2, 3, 4],
-  //   [1, 2, 3, 4, 1, 2, 3, 4],
-  // ];
-  // const A = [
-  //   [1, 2, 3, 4],
-  //   [1, 2, 3, 4],
-  //   [1, 2, 3, 4],
-  //   [1, 2, 3, 4],
-  // ];
-  // const B = [
-  //   [1, 2, 3, 4],
-  //   [1, 2, 3, 4],
-  //   [1, 2, 3, 4],
-  //   [1, 2, 3, 4],
-  // ];
-  // const A = [
-  //   [1, 2],
-  //   [1, 2],
-  // ];
-  // const B = [
-  //   [1, 2],
-  //   [1, 2],
-  // ];
   try {
     const resultingMatrix = await multiplyMatrixBlock(matrixA, matrixB);
     res.json(resultingMatrix).status(200);
