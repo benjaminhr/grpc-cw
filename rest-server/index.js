@@ -1,21 +1,45 @@
 const express = require("express");
 const cors = require("cors");
 const bodyParser = require("body-parser");
+const fileUpload = require("express-fileupload");
 const multiplyMatrixBlock = require("./multiplyMatrixBlock");
 const app = express();
 
 app.use(cors());
-app.use(express.json());
-app.use(
-  bodyParser.urlencoded({
-    extended: true,
-  })
-);
+// app.use(express.json());
+app.use(fileUpload());
+// app.use(
+//   bodyParser.urlencoded({
+//     extended: true,
+//   })
+// );
 
 /*
-  Register all routes here which are defined in `routes.js`
+  POST /multiply endpoint
+  Expects two files two be uploaded
 */
-app.get("/", async (req, res) => {
+app.post("/multiply", async (req, res) => {
+  // Error handling for when no files where uploaded
+  if (!req.files || Object.keys(req.files).length === 0) {
+    return res.status(400).send("Request is missing files A and B");
+  }
+
+  // Error for when there are files but they are not named correctly in request body
+  if (!req.files.hasOwnProperty("A")) {
+    return res.status(400).send('Request is missing file "A"');
+  }
+
+  // Error for when there are files but they are not named correctly in request body
+  if (!req.files.hasOwnProperty("B")) {
+    return res.status(400).send('Request is missing file "B"');
+  }
+
+  const fileA = req.files.A.data.toString();
+  const fileB = req.files.B.data.toString();
+
+  console.log(fileA);
+  console.log(fileB);
+
   // if (!A || !B) {
   //   throw new Error("A or B matrices are undefined");
   // } else if (A[0].constructor !== Array || B[0].constructor !== Array) {
