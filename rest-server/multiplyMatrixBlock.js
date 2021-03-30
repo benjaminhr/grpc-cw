@@ -24,13 +24,13 @@ const address = `${host}:${port}`;
 const client = new BlockMultService(address, grpc.credentials.createInsecure());
 
 // Global variable for blockmult functions
-const MAX = 8;
+// const MAX = 2;
 
 /*
   Wrapper function which creates protobuf acceptable block
   data structure, and then calls grpc multiplyBlock function
 */
-async function multiplyBlockRPC(A, B) {
+async function multiplyBlockRPC(A, B, MAX) {
   return new Promise((resolve, reject) => {
     const block = utils.createBlock(A, B, MAX);
 
@@ -47,7 +47,7 @@ async function multiplyBlockRPC(A, B) {
   Wrapper function which creates protobuf acceptable block
   data structure, and then calls grpc addBlock function 
 */
-async function addBlockRPC(A, B) {
+async function addBlockRPC(A, B, MAX) {
   return new Promise((resolve, reject) => {
     const block = utils.createBlock(A, B, MAX);
 
@@ -61,13 +61,11 @@ async function addBlockRPC(A, B) {
 }
 
 async function multiplyMatrixBlock(A, B) {
-  if (!A || !B) {
-    throw new Error("A or B matrices are undefined");
-  } else if (A[0].constructor !== Array || B[0].constructor !== Array) {
-    throw new Error("A or B is not a 2D array");
-  }
-
+  // Global variable for blockmult functions
+  const MAX = A.length;
+  // Block size
   const bSize = 2;
+
   let A1 = [...Array(MAX)].map((_) => Array(MAX));
   let A2 = [...Array(MAX)].map((_) => Array(MAX));
   let A3 = [...Array(MAX)].map((_) => Array(MAX));
@@ -111,20 +109,24 @@ async function multiplyMatrixBlock(A, B) {
   }
 
   A3 = await addBlockRPC(
-    await multiplyBlockRPC(A1, A2),
-    await multiplyBlockRPC(B1, C2)
+    await multiplyBlockRPC(A1, A2, MAX),
+    await multiplyBlockRPC(B1, C2, MAX),
+    MAX
   );
   B3 = await addBlockRPC(
-    await multiplyBlockRPC(A1, B2),
-    await multiplyBlockRPC(B1, D2)
+    await multiplyBlockRPC(A1, B2, MAX),
+    await multiplyBlockRPC(B1, D2, MAX),
+    MAX
   );
   C3 = await addBlockRPC(
-    await multiplyBlockRPC(C1, A2),
-    await multiplyBlockRPC(D1, C2)
+    await multiplyBlockRPC(C1, A2, MAX),
+    await multiplyBlockRPC(D1, C2, MAX),
+    MAX
   );
   D3 = await addBlockRPC(
-    await multiplyBlockRPC(C1, B2),
-    await multiplyBlockRPC(D1, D2)
+    await multiplyBlockRPC(C1, B2, MAX),
+    await multiplyBlockRPC(D1, D2, MAX),
+    MAX
   );
 
   for (let i = 0; i < bSize; i++) {
@@ -154,40 +156,4 @@ async function multiplyMatrixBlock(A, B) {
   return res;
 }
 
-const A = [
-  [1, 2, 3, 4, 1, 2, 3, 4],
-  [1, 2, 3, 4, 1, 2, 3, 4],
-  [1, 2, 3, 4, 1, 2, 3, 4],
-  [1, 2, 3, 4, 1, 2, 3, 4],
-  [1, 2, 3, 4, 1, 2, 3, 4],
-  [1, 2, 3, 4, 1, 2, 3, 4],
-  [1, 2, 3, 4, 1, 2, 3, 4],
-  [1, 2, 3, 4, 1, 2, 3, 4],
-];
-
-const B = [
-  [1, 2, 3, 4, 1, 2, 3, 4],
-  [1, 2, 3, 4, 1, 2, 3, 4],
-  [1, 2, 3, 4, 1, 2, 3, 4],
-  [1, 2, 3, 4, 1, 2, 3, 4],
-  [1, 2, 3, 4, 1, 2, 3, 4],
-  [1, 2, 3, 4, 1, 2, 3, 4],
-  [1, 2, 3, 4, 1, 2, 3, 4],
-  [1, 2, 3, 4, 1, 2, 3, 4],
-];
-
-// const A = [
-//   [1, 2, 3, 4],
-//   [1, 2, 3, 4],
-//   [1, 2, 3, 4],
-//   [1, 2, 3, 4],
-// ];
-
-// const B = [
-//   [1, 2, 3, 4],
-//   [1, 2, 3, 4],
-//   [1, 2, 3, 4],
-//   [1, 2, 3, 4],
-// ];
-
-multiplyMatrixBlock(A, B).then(console.log).catch(console.log);
+module.exports = multiplyMatrixBlock;
