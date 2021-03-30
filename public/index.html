@@ -40,38 +40,45 @@
         </button>
       </form>
 
+      <p class="error"></p>
       <table class="matrix"></table>
     </div>
   </body>
 
   <script>
-    document.querySelector("#upload").addEventListener("submit", (event) => {
-      event.preventDefault();
-      fetch(event.target.action, {
-        method: "POST",
-        headers: {},
-        body: new FormData(event.target),
-      })
-        .then((resp) => {
-          return resp.json();
-        })
-        .then((matrix) => {
-          const table = document.querySelector(".matrix");
+    (async () => {
+      const upload = document.querySelector("#upload");
 
-          let result = "";
-          for (let i = 0; i < matrix.length; i++) {
-            result += "<tr>";
-            for (let j = 0; j < matrix[i].length; j++) {
-              result += "<td>" + matrix[i][j] + "</td>";
-            }
-            result += "</tr>";
-          }
+      upload.addEventListener("submit", async (event) => {
+        event.preventDefault();
 
-          table.innerHTML = result;
-        })
-        .catch((error) => {
-          console.log("Error uploading: ", error);
+        const response = await fetch(event.target.action, {
+          method: "POST",
+          headers: {},
+          body: new FormData(event.target),
         });
-    });
+
+        const json = await response.json();
+
+        if (json.hasOwnProperty("error")) {
+          console.log("Error uploading: ", json.error);
+          document.querySelector(".error").innerHTML = json.error;
+          return;
+        }
+
+        const matrix = json;
+        const table = document.querySelector(".matrix");
+
+        let result = "";
+        for (let i = 0; i < matrix.length; i++) {
+          result += "<tr>";
+          for (let j = 0; j < matrix[i].length; j++) {
+            result += "<td>" + matrix[i][j] + "</td>";
+          }
+          result += "</tr>";
+        }
+        table.innerHTML = result;
+      });
+    })();
   </script>
 </html>

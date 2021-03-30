@@ -10,6 +10,10 @@ const app = express();
 app.use(cors());
 app.use(fileUpload());
 
+/*
+  GET / endpoint
+  Serves the homepage client
+*/
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "../public", "index.html"));
 });
@@ -21,17 +25,17 @@ app.get("/", (req, res) => {
 app.post("/multiply", async (req, res) => {
   // Error handling for when no files where uploaded
   if (!req.files || Object.keys(req.files).length === 0) {
-    return res.status(400).send("Request is missing files A and B");
+    return res.status(400).json({ error: "Request is missing files A and B" });
   }
 
   // Error for when there are files but they are not named correctly in request body
   if (!req.files.hasOwnProperty("A")) {
-    return res.status(400).send('Request is missing file "A"');
+    return res.status(400).json({ error: 'Request is missing file "A"' });
   }
 
   // Error for when there are files but they are not named correctly in request body
   if (!req.files.hasOwnProperty("B")) {
-    return res.status(400).send('Request is missing file "B"');
+    return res.status(400).json({ error: 'Request is missing file "B"' });
   }
 
   const fileA = req.files.A.data.toString().trim();
@@ -44,14 +48,18 @@ app.post("/multiply", async (req, res) => {
 
   // Error handling for when matrices do not have the same dimensions
   if (matrixA.length !== matrixB.length) {
-    return res.status(400).send("Matrices do not have the same dimensions");
+    return res
+      .status(400)
+      .json({ error: "Matrices do not have the same dimensions" });
   }
 
   // Error handling for when the matrices do not have dimensions which are powers of 2
   if (!utils.powerOfTwo(dimension)) {
     return res
       .status(400)
-      .send("Matrix dimensions must be powers of 2 e.g. 2x2, 4x4, 8x8");
+      .json({
+        error: "Matrix dimensions must be powers of 2 e.g. 2x2, 4x4, 8x8",
+      });
   }
 
   try {
@@ -59,6 +67,7 @@ app.post("/multiply", async (req, res) => {
     res.json(resultingMatrix).status(200);
   } catch (error) {
     console.log(error);
+    res.status(500);
   }
 });
 

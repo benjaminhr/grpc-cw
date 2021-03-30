@@ -2,7 +2,6 @@ const grpc = require("grpc");
 const protoLoader = require("@grpc/proto-loader");
 const utils = require("../utils/tools");
 const blockMult = require("../utils/blockmult");
-const { resolve } = require("path");
 const PROTO_PATH = "blockmult.proto";
 
 /*
@@ -57,9 +56,14 @@ async function addBlockRPC(A, B, MAX) {
   });
 }
 
+/*
+  Main function called in rest-server/index.js with two matrices uploaded in the client
+  All errors are catched/propagated in/to the server
+*/
 async function multiplyMatrixBlock(A, B) {
-  // Global variable for blockmult functions
+  // Global used for the dimensions of the resulting matrix
   const MAX = A.length;
+
   // Block size
   const bSize = 2;
 
