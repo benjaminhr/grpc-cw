@@ -109,26 +109,21 @@ async function multiplyMatrixBlock(A, B) {
     }
   }
 
-  A3 = await addBlockRPC(
-    await multiplyBlockRPC(A1, A2, MAX),
-    await multiplyBlockRPC(B1, C2, MAX),
-    MAX
-  );
-  B3 = await addBlockRPC(
-    await multiplyBlockRPC(A1, B2, MAX),
-    await multiplyBlockRPC(B1, D2, MAX),
-    MAX
-  );
-  C3 = await addBlockRPC(
-    await multiplyBlockRPC(C1, A2, MAX),
-    await multiplyBlockRPC(D1, C2, MAX),
-    MAX
-  );
-  D3 = await addBlockRPC(
-    await multiplyBlockRPC(C1, B2, MAX),
-    await multiplyBlockRPC(D1, D2, MAX),
-    MAX
-  );
+  const A1A2 = await multiplyBlockRPC(A1, A2, MAX);
+  const B1C2 = await multiplyBlockRPC(B1, C2, MAX);
+  A3 = await addBlockRPC(A1A2, B1C2, MAX);
+
+  const A1B2 = await multiplyBlockRPC(A1, B2, MAX);
+  const B1D2 = await multiplyBlockRPC(B1, D2, MAX);
+  B3 = await addBlockRPC(A1B2, B1D2, MAX);
+
+  const C1A2 = await multiplyBlockRPC(C1, A2, MAX);
+  const D1C2 = await multiplyBlockRPC(D1, C2, MAX);
+  C3 = await addBlockRPC(C1A2, D1C2, MAX);
+
+  const C1B2 = await multiplyBlockRPC(C1, B2, MAX);
+  const D1D2 = await multiplyBlockRPC(D1, D2, MAX);
+  D3 = await addBlockRPC(C1B2, D1D2, MAX);
 
   for (let i = 0; i < bSize; i++) {
     for (let j = 0; j < bSize; j++) {
