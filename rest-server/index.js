@@ -38,6 +38,8 @@ app.post("/multiply", async (req, res) => {
     return res.status(400).json({ error: 'Request is missing file "B"' });
   }
 
+  console.log("Incoming request");
+
   const fileA = req.files.A.data.toString().trim();
   const fileB = req.files.B.data.toString().trim();
 
@@ -55,11 +57,9 @@ app.post("/multiply", async (req, res) => {
 
   // Error handling for when the matrices do not have dimensions which are powers of 2
   if (!utils.powerOfTwo(dimension)) {
-    return res
-      .status(400)
-      .json({
-        error: "Matrix dimensions must be powers of 2 e.g. 2x2, 4x4, 8x8",
-      });
+    return res.status(400).json({
+      error: "Matrix dimensions must be powers of 2 e.g. 2x2, 4x4, 8x8",
+    });
   }
 
   try {

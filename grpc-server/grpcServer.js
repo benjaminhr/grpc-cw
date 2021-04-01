@@ -4,6 +4,10 @@ const utils = require("../utils/tools");
 const blockMult = require("../utils/blockmult");
 const PROTO_PATH = "blockmult.proto";
 
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 /*
   This is the code ran inside each process
   It creates a new instance of the GRPC server on a port
@@ -28,8 +32,14 @@ function runGrpcServer() {
         utils.convertProtoBufToArray(B),
         MAX
       );
+
       const response = utils.convertArrayToProtoBuf(multMatrix);
       cb(null, { block: response });
+
+      // sleep(3000).then(() => {
+      //   const response = utils.convertArrayToProtoBuf(multMatrix);
+      //   cb(null, { block: response });
+      // });
     },
     addBlock: (body, cb) => {
       console.log("=> addBlock called");

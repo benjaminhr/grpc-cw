@@ -1,4 +1,8 @@
-const { addBlockRPC, multiplyBlockRPC } = require("./grpcClient");
+const {
+  addBlockRPC,
+  multiplyBlockRPC,
+  resetGrpcClient,
+} = require("./grpcClient");
 
 /*
   Main function called in rest-server/index.js with two matrices uploaded in the client
@@ -93,6 +97,8 @@ async function multiplyMatrixBlock(A, B) {
     }
   }
 
+  // Reset grpc client internal variables for scaling
+  resetGrpcClient();
   return res;
 }
 
