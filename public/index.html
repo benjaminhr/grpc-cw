@@ -21,13 +21,22 @@
         id="upload"
       >
         <div class="row">
-          <div class="six columns">
+          <div class="four columns">
             <label for="A">Matrix A:</label>
             <input type="file" name="A" id="A" />
           </div>
-          <div class="six columns">
+          <div class="four columns">
             <label for="B">Matrix B:</label>
             <input type="file" name="B" id="A" />
+          </div>
+          <div class="four columns">
+            <label for="deadline">Deadline (ms):</label>
+            <input
+              type="number"
+              name="deadline"
+              id="deadline"
+              placeholder="50"
+            />
           </div>
         </div>
 
@@ -47,6 +56,7 @@
 
   <script>
     (async () => {
+      document.querySelector("#deadline").value = "50";
       const upload = document.querySelector("#upload");
 
       upload.addEventListener("submit", async (event) => {

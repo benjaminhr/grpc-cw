@@ -2,13 +2,15 @@ const {
   addBlockRPC,
   multiplyBlockRPC,
   resetGrpcClient,
+  setDeadline,
 } = require("./grpcClient");
 
-/*
-  Main function called in rest-server/index.js with two matrices uploaded in the client
-  All errors are catched/propagated in/to the server
-*/
-async function multiplyMatrixBlock(A, B) {
+//  Main function called in rest-server/index.js with two matrices uploaded in the client
+//  All errors are catched/propagated in/to the server
+async function multiplyMatrixBlock(A, B, deadline) {
+  // Set deadline to whatever user specified in request
+  setDeadline(deadline);
+
   // Global used for the dimensions of the resulting matrix
   const MAX = A.length;
 

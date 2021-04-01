@@ -39,6 +39,8 @@ app.post("/multiply", async (req, res) => {
     return res.status(400).json({ error: 'Request is missing file "B"' });
   }
 
+  const deadline = parseInt(req.body.deadline); // default 50
+
   const fileA = req.files.A.data.toString().trim();
   const fileB = req.files.B.data.toString().trim();
 
@@ -63,7 +65,11 @@ app.post("/multiply", async (req, res) => {
 
   try {
     const p1 = performance.now();
-    const resultingMatrix = await multiplyMatrixBlock(matrixA, matrixB);
+    const resultingMatrix = await multiplyMatrixBlock(
+      matrixA,
+      matrixB,
+      deadline
+    );
     const p2 = performance.now();
     const totalTimeTaken = (p2 - p1) / 1000;
 
@@ -71,8 +77,9 @@ app.post("/multiply", async (req, res) => {
       "Returning matrix of size: " +
         resultingMatrix[0].length +
         " in " +
-        totalTimeTaken +
-        " seconds."
+        totalTimeTaken.toFixed(4) +
+        " seconds with deadline: " +
+        deadline
     );
     res.json(resultingMatrix).status(200);
   } catch (error) {

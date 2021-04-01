@@ -100,6 +100,10 @@ function resetGrpcClient() {
   constants.clients = [{ client: createGrpcClient(0), id: 0 }];
 }
 
+function setDeadline(deadline) {
+  constants.deadline = deadline;
+}
+
 // Wrapper function which creates protobuf acceptable block
 // data structure, and then calls grpc multiplyBlock function
 async function multiplyBlockRPC(A, B, MAX) {
@@ -153,4 +157,5 @@ module.exports = {
   addBlockRPC,
   multiplyBlockRPC,
   resetGrpcClient,
+  setDeadline,
 };
