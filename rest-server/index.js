@@ -62,6 +62,7 @@ app.post("/multiply", async (req, res) => {
 
   try {
     const resultingMatrix = await multiplyMatrixBlock(matrixA, matrixB);
+    console.log("Returning matrix of size: " + resultingMatrix[0].length);
     res.json(resultingMatrix).status(200);
   } catch (error) {
     console.log(error);

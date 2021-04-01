@@ -52,6 +52,9 @@
       upload.addEventListener("submit", async (event) => {
         event.preventDefault();
 
+        const error = document.querySelector(".error");
+        error.innerHTML = "";
+
         const response = await fetch(event.target.action, {
           method: "POST",
           headers: {},
@@ -62,7 +65,7 @@
 
         if (json.hasOwnProperty("error")) {
           console.log("Error uploading: ", json.error);
-          document.querySelector(".error").innerHTML = json.error;
+          error.innerHTML = json.error;
           return;
         }
 

@@ -44,7 +44,7 @@ const constants = {
   // Keep track of all clients, have one always ready for the initial call
   clients: [{ client: createGrpcClient(0), id: 0 }],
 
-  // Index used to distribute clients evenly
+  // Counter index used to distribute clients evenly
   clientIndex: 0,
 };
 

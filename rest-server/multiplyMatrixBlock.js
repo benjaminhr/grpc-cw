@@ -57,11 +57,10 @@ async function multiplyMatrixBlock(A, B) {
     }
   }
 
-  // seperate first call
+  // seperate first call to get footprint and scale up
   const A1A2 = await multiplyBlockRPC(A1, A2, MAX);
 
-  // then run all other multiplications in parallel
-  // with scaled clients
+  // collect all functions (not called yet)
   const multiplyMatrixCalls = [
     multiplyBlockRPC(B1, C2, MAX),
     multiplyBlockRPC(A1, B2, MAX),
@@ -72,6 +71,8 @@ async function multiplyMatrixBlock(A, B) {
     multiplyBlockRPC(D1, D2, MAX),
   ];
 
+  // then run all other multiplications in parallel
+  // with scaled clients
   const [B1C2, A1B2, B1D2, C1A2, D1C2, C1B2, D1D2] = await Promise.all(
     multiplyMatrixCalls
   );
