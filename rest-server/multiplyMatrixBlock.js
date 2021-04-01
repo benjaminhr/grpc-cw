@@ -57,20 +57,28 @@ async function multiplyMatrixBlock(A, B) {
     }
   }
 
+  // seperate first call
   const A1A2 = await multiplyBlockRPC(A1, A2, MAX);
-  const B1C2 = await multiplyBlockRPC(B1, C2, MAX);
+
+  // then run all other multiplications in parallel
+  // with scaled clients
+  const multiplyMatrixCalls = [
+    multiplyBlockRPC(B1, C2, MAX),
+    multiplyBlockRPC(A1, B2, MAX),
+    multiplyBlockRPC(B1, D2, MAX),
+    multiplyBlockRPC(C1, A2, MAX),
+    multiplyBlockRPC(D1, C2, MAX),
+    multiplyBlockRPC(C1, B2, MAX),
+    multiplyBlockRPC(D1, D2, MAX),
+  ];
+
+  const [B1C2, A1B2, B1D2, C1A2, D1C2, C1B2, D1D2] = await Promise.all(
+    multiplyMatrixCalls
+  );
+
   A3 = await addBlockRPC(A1A2, B1C2, MAX);
-
-  const A1B2 = await multiplyBlockRPC(A1, B2, MAX);
-  const B1D2 = await multiplyBlockRPC(B1, D2, MAX);
   B3 = await addBlockRPC(A1B2, B1D2, MAX);
-
-  const C1A2 = await multiplyBlockRPC(C1, A2, MAX);
-  const D1C2 = await multiplyBlockRPC(D1, C2, MAX);
   C3 = await addBlockRPC(C1A2, D1C2, MAX);
-
-  const C1B2 = await multiplyBlockRPC(C1, B2, MAX);
-  const D1D2 = await multiplyBlockRPC(D1, D2, MAX);
   D3 = await addBlockRPC(C1B2, D1D2, MAX);
 
   for (let i = 0; i < bSize; i++) {

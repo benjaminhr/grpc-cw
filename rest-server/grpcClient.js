@@ -38,66 +38,51 @@ const constants = {
   // -1 footprint (ms) means it has not been set yet
   footprint: -1,
 
-  // 7 multiplyBlock calls + 4 addBlock calls
-  numberOfCalls: 11,
+  // 8 multiplyBlock calls + 4 addBlock calls
+  numberOfCalls: 12,
 
   // Keep track of all clients, have one always ready for the initial call
-  clients: [{ client: createGrpcClient(0), isAvailable: true, id: 0 }],
+  clients: [{ client: createGrpcClient(0), id: 0 }],
 
-  // Keeps of whether we have scaled to minimum stubs yet
-  scalingDone: false,
+  // Index used to distribute clients evenly
+  clientIndex: 0,
 };
 
 // Function for calculating and creating the number of clients needed
 function scale() {
   let numberOfClients = Math.ceil(
     (constants.footprint * constants.numberOfCalls) /
-      (constants.deadline - constants.footprint)
+      Math.abs(constants.deadline - constants.footprint)
   );
+
+  console.log("footprint: " + constants.footprint);
 
   // Cap at 8 clients
   if (numberOfClients > 8) {
     numberOfClients = 8;
   }
 
-  console.log("number of clients needed: " + numberOfClients);
+  console.log("Scaling to: " + numberOfClients);
 
   for (let i = 1; i < numberOfClients; i++) {
     constants.clients[i] = {
       id: i,
       client: createGrpcClient(i),
-      isAvailable: true,
     };
   }
-
-  constants.scalingDone = true;
 }
-
-let secondIn = true;
 
 // Returns the next available client
 function getClient() {
-  if (
-    !constants.scalingDone &&
-    secondIn === true &&
-    constants.footprint !== -1
-  ) {
-    scale();
-    secondIn = false;
-  } else {
-    while (!secondIn) {}
-  }
-
-  const client = constants.clients.find(
-    (client) => client.isAvailable === true
-  );
+  // Our load balancing strategy is just a counter which wraps around the length of the clients
+  const client = constants.clients[constants.clientIndex];
+  constants.clientIndex = ++constants.clientIndex % constants.clients.length;
 
   if (!client) {
     console.log("Could not find an available client.");
     process.exit(1);
   }
 
-  client.isAvailable = false;
   return client;
 }
 
@@ -105,15 +90,14 @@ function getClient() {
 // calculated and returned to the client
 function resetGrpcClient() {
   constants.footprint = -1;
+  constants.clientIndex = 0;
 
   // Close all activate connections
   for (const clientObj of constants.clients) {
     clientObj.client.close();
   }
 
-  constants.clients = [
-    { client: createGrpcClient(0), isAvailable: true, id: 0 },
-  ];
+  constants.clients = [{ client: createGrpcClient(0), id: 0 }];
 }
 
 // Wrapper function which creates protobuf acceptable block
@@ -122,7 +106,7 @@ async function multiplyBlockRPC(A, B, MAX) {
   // Get the next available client
   const client = await getClient();
 
-  console.log("Client from: " + client.id);
+  console.log("Using client: " + (client.id + 1));
 
   return new Promise((resolve, reject) => {
     const block = utils.createBlock(A, B, MAX);
@@ -131,15 +115,11 @@ async function multiplyBlockRPC(A, B, MAX) {
     client.client.multiplyBlock(block, (err, res) => {
       if (err) reject(err);
 
-      const footPrintTimer2 = performance.now();
-      // Set and measure footprint during first call
-      constants.footprint =
-        constants.footprint === -1
-          ? footPrintTimer2 - footPrintTimer1
-          : constants.footprint;
-
-      // Make client available again
-      client.isAvailable = true;
+      // Set and measure footprint during first call, and scale up accordingly
+      if (constants.footprint === -1) {
+        constants.footprint = performance.now() - footPrintTimer1;
+        scale();
+      }
 
       const matrix = utils.convertProtoBufToArray(res.block);
       resolve(matrix);
@@ -152,6 +132,8 @@ async function multiplyBlockRPC(A, B, MAX) {
 async function addBlockRPC(A, B, MAX) {
   // Get the next available client
   const client = await getClient();
+
+  console.log("Using client: " + (client.id + 1));
 
   return new Promise((resolve, reject) => {
     const block = utils.createBlock(A, B, MAX);

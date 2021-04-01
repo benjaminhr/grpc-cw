@@ -38,8 +38,6 @@ app.post("/multiply", async (req, res) => {
     return res.status(400).json({ error: 'Request is missing file "B"' });
   }
 
-  console.log("Incoming request");
-
   const fileA = req.files.A.data.toString().trim();
   const fileB = req.files.B.data.toString().trim();
 
