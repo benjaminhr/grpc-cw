@@ -3,6 +3,7 @@ const express = require("express");
 const cors = require("cors");
 const bodyParser = require("body-parser");
 const fileUpload = require("express-fileupload");
+const { performance } = require("perf_hooks");
 const multiplyMatrixBlock = require("./multiplyMatrixBlock");
 const utils = require("../utils/tools");
 const app = express();
@@ -61,8 +62,18 @@ app.post("/multiply", async (req, res) => {
   }
 
   try {
+    const p1 = performance.now();
     const resultingMatrix = await multiplyMatrixBlock(matrixA, matrixB);
-    console.log("Returning matrix of size: " + resultingMatrix[0].length);
+    const p2 = performance.now();
+    const totalTimeTaken = (p2 - p1) / 1000;
+
+    console.log(
+      "Returning matrix of size: " +
+        resultingMatrix[0].length +
+        " in " +
+        totalTimeTaken +
+        " seconds."
+    );
     res.json(resultingMatrix).status(200);
   } catch (error) {
     console.log(error);

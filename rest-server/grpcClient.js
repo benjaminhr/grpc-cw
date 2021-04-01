@@ -38,8 +38,8 @@ const constants = {
   // -1 footprint (ms) means it has not been set yet
   footprint: -1,
 
-  // 8 multiplyBlock calls + 4 addBlock calls
-  numberOfCalls: 12,
+  // 7 multiplyBlock calls
+  numberOfCalls: 7,
 
   // Keep track of all clients, have one always ready for the initial call
   clients: [{ client: createGrpcClient(0), id: 0 }],
